@@ -131,8 +131,8 @@ void Sift(uint32_t N, bool printPrimes) {
             if (p2 < N/p_next) {
                 /* set c_from to index of p^2: */
                 delta = 1; high = c_from;
-                while (w[high+delta] <= p2) delta = std::min(2*delta,imaxf-high); /* IS delta *= 2 SAFE? */
-                c_from = find(w, p2, c_from, high+delta+1);
+                while (w[high+delta] <= p2) delta = std::min(2*delta,imaxf-high+1); /* IS delta *= 2 SAFE? */
+                c_from = find(w, p2, c_from, high+delta);
                 Compress(w, d, c_from, imaxf, w_end);
             }
         }
