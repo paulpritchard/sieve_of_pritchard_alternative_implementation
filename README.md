@@ -78,6 +78,8 @@ The resulting code is still essentially a faithful implementation of the abstrac
 This is a self-contained C++ program.
 It is obtained from wheel_sieve_fast.cpp by using doubling then binary searches to compute key
 indexes used for compression and deletion.
+As shown by the "Other" timing category, this has almost no effect on performance,
+so the increased code complexity is not justified.
 
 ### wheel_sieve_fast_counter.cpp
 

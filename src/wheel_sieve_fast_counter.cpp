@@ -168,7 +168,7 @@ void Count(uint64_t N) {
     /* otherwise, w[0..w_end], omitting zeros and values w with d[w] true, is the ordered set (W \union Pr - {p_i|i<=nrPrimes}) \inter {1,...,N/p}, */
     /* and no zero or deleted values occur in w before a value between 1 and N/p' (where p' is the prime after p) */
     uint32_t p, p_index, p_next, w_end_prev, rem;
-    uint64_t p2, limit, offset, next;
+    uint64_t p2, limit;
     uint32_t iNoverp = 0; /* max {i: w[i]<=N/p} */
     uint32_t iNoverp2 = 0; /* max {i: w[i]<=N/p^2} */
    /* W,k,length = {1},1,2: */
@@ -213,11 +213,11 @@ void Count(uint64_t N) {
             }
         } else { /* length = N */
             while (w[iNoverp] > N/p) iNoverp--; /* doubling then binary search could be used here */
+            nr_deleted += iNoverp-p_index+1;
             if (p2 < N/p) {
                 while (w[iNoverp2] > N/p2) iNoverp2--; /* doubling then binary search could be used here */
                 Delete(w, p, p_index, iNoverp2, d); /* don't delete p */
             }
-            nr_deleted += iNoverp-p_index+1;
             p_index++;
             p_next = w[p_index];
             if (p_next == 0) break; /* next p is after zeroed section so is too big */
