@@ -124,7 +124,7 @@ void Sift(uint32_t N, bool printPrimes) {
             p_next = w[++p_index];
             if (p_next == 0) break; /* next p is after zeroed section so is too big */
             while (w[imaxf] > N/p_next) imaxf--; /* doubling then binary search could be used here */
-            if (p2 < N/p_next) {
+            if (p2 <= N/p_next) {
                 while (w[c_from] < p2) c_from++; /* doubling then binary search could be used here */
                 Compress(w, d, c_from, imaxf, w_end);
             }

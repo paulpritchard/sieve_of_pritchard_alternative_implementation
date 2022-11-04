@@ -128,7 +128,7 @@ void Sift(uint32_t N, bool printPrimes) {
             delta = 1; low = imaxf;
             while (w[low-delta] > N/p_next) delta = std::min(2*delta,low); /* IS delta *= 2 SAFE? */
             imaxf = find(w, N/p_next, low-delta, imaxf+1);
-            if (p2 < N/p_next) {
+            if (p2 <= N/p_next) {
                 /* set c_from to index of p^2: */
                 delta = 1; high = c_from;
                 while (w[high+delta] <= p2) delta = std::min(2*delta,imaxf-high+1); /* IS delta *= 2 SAFE? */

@@ -133,7 +133,7 @@ void Sift(uint32_t N) {
             p_next = w[++p_index];
             if (p_next == 0) break; /* next p is after zeroed section so is too big */
             while (w[iNoverp] > N/p_next) iNoverp--; /* doubling then binary search could be used here */
-            if (p2 < N/p_next) {
+            if (p2 <= N/p_next) {
                 while (w[c_from] < p2) c_from++; /* doubling then binary search could be used here */
                 Compress(w, d, c_from, iNoverp, w_end);
             }
@@ -203,7 +203,7 @@ void Count(uint64_t N) {
                 nr_deleted += w_end;
                 length = N; /* notional */
                 iNoverp2 = find(w, N/p2, 0, w_end);
-                if (p2 < N/p) {
+                if (p2 <= N/p) {
                     Delete(w, p, 1, iNoverp2, d);
                     while (w[c_from] < p2) c_from++; /* doubling then binary search could be used here */
                     Compress(w, d, c_from, w_end, w_end);
@@ -214,14 +214,14 @@ void Count(uint64_t N) {
         } else { /* length = N */
             while (w[iNoverp] > N/p) iNoverp--; /* doubling then binary search could be used here */
             nr_deleted += iNoverp-p_index+1;
-            if (p2 < N/p) {
+            if (p2 <= N/p) {
                 while (w[iNoverp2] > N/p2) iNoverp2--; /* doubling then binary search could be used here */
                 Delete(w, p, p_index, iNoverp2, d); /* don't delete p */
             }
             p_index++;
             p_next = w[p_index];
             if (p_next == 0) break; /* next p is after zeroed section so is too big */
-            if (p2 < N/p_next) {
+            if (p2 <= N/p_next) {
                 while (w[iNoverp] > N/p_next) iNoverp--; /* doubling then binary search could be used here */
                 while (w[c_from] < p2) c_from++; /* doubling then binary search could be used here */
                 Compress(w, d, c_from, iNoverp, w_end);
