@@ -113,7 +113,7 @@ This time-complexity is bettered only by the specialised algorithms for prime co
 ### in preparation
 
 It is possible to gain further speedups by a similar factor,
-since the values up to N/p are themselves determined by those up to N/p^2.
+since the values up to N/p are themselves determined by those up to N/p^2, and so on.
 This is work in progress.
 
 ## optimizations
