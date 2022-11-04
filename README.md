@@ -85,6 +85,8 @@ so the increased code complexity is not justified.
 
 This is a self-contained C++ program, which behaves like wheel_sieve_fast.cpp when the printing option is chosen.
 However, when only a count of the primes up to N is required, it runs very much faster.
+It does so by essentially simulating the fast implementation of the dynamic wheel sieve
+with a cut-down version using much smaller arrays.
 
 The number of primes is simply the difference between the total number of values appended to w,
 and the total number of (non-prime) values deleted from w, plus 1 for the prime 2.
@@ -108,7 +110,11 @@ When only counting is requested, the time-complexity is O(N/(log N\*log log N)) 
 The space required for array w is O(N/(log N\*log log N)) words, and for d is O(N/log N) bytes (which again could be bits).
 This time-complexity is bettered only by the specialised algorithms for prime counting dating from Meissel's in 1870.
 
-It may be possible to gain further speedups, since the values up to N/p are themselves determined by those up to N/p^2.
+### in preparation
+
+It is possible to gain further speedups by a similar factor,
+since the values up to N/p are themselves determined by those up to N/p^2.
+This is work in progress.
 
 ## optimizations
 
