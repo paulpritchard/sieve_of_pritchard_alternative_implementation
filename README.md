@@ -110,11 +110,28 @@ When only counting is requested, the time-complexity is O(N/(log N\*log log N)) 
 The space required for array w is O(N/(log N\*log log N)) words, and for d is O(N/log N) bytes (which again could be bits).
 This time-complexity is bettered only by the specialised algorithms for prime counting dating from Meissel's in 1870.
 
-### in preparation
+### wheel_sieve_fast_counter_two.cpp
 
-It is possible to gain further speedups by a similar factor,
-since the values up to N/p are themselves determined by those up to N/p^2, and so on.
-This is work in progress.
+This is a self-contained C++ program, which behaves like wheel_sieve_fast.cpp when the printing option is chosen,
+except that the code is modified to also return an array of the primes found.
+However, when only a count of the primes up to N is required, it runs very much faster than even wheel_sieve_fast_counter.cpp.
+It does so by essentially simulating the latter with a cut-down version using much smaller arrays.
+
+Additional information is maintained by this algorithm.
+First, the primes up to sqrt(N) are found (by a call to the Sift function).
+Second, an array is maintained that essentially records the number of elements in W up to N/p for each prime p up to sqrt(N).
+Also, the code has been refactored to better reveal the different stages of the main loop over the primes.
+
+When only counting is requested, the work performed is equivalent to the dynamic wheel sieve
+up to a limit of O(N/(log N)^2), since the additional work for the added arrays in negligible.
+The space for the additional arrays is also (comparatively) insignificant.
+Accordingly, the time-complexity is O(N/((log N)^2\*log log N)) operations.
+The space required for array w is O(N/((log N)^2\*log log N)) words,
+and for d is O(N/((log N)^2) bytes (which again could be bits).
+
+### forthcoming
+
+It is possible to continue in this vein, for at least one more step.
 
 ## optimizations
 
