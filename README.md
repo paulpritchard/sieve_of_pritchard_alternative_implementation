@@ -72,6 +72,10 @@ So if p'*p^2 exceeds N (where p' is the next prime), no compression at all is ne
 Furthermore, compression that is needed can start with p^2.
 
 The resulting code is still essentially a faithful implementation of the abstract algorithm.
+A detailed high-level code animation for N=2000 is shown in this video:
+
+[<img src="https://user-images.githubusercontent.com/1209656/200105831-ca678d1f-eaab-4895-8dea-58f04001211f.jpg" width="50%">](https://www.youtube.com/watch?v=-q-CFXLRSY0 "Code animation for N=2000")
+
 
 ### wheel_sieve_fast_doubling.cpp
 
