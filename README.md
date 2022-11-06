@@ -88,7 +88,7 @@ so the increased code complexity is not justified.
 ### wheel_sieve_fast_counter.cpp
 
 This is a self-contained C++ program, which behaves like wheel_sieve_fast.cpp when the printing option is chosen.
-However, when only a count of the primes up to N is required, it runs very much faster.
+However, when only a count of the primes up to N is required, it runs much faster.
 It does so by essentially simulating the fast implementation of the dynamic wheel sieve
 with a cut-down version using much smaller arrays.
 
@@ -110,9 +110,10 @@ When the print option is chosen, the time-complexity is O(N/log log N) operation
 The space required for array w is O(N/log log N) words each with O(log N) bits,
 and for d is O(N) bits (although the C++ implementation uses bytes).
 
-When only counting is requested, the time-complexity is O(N/(log N\*log log N)) operations.
+When only counting is requested, the work performed is dominated by the cost of compression,
+which is proportional to the number of deletions performed by the dynamic wheel sieve for primes up to N^(1/3).
+So the time-complexity is still O(N/log log N)) operations, but with a very small constant factor.
 The space required for array w is O(N/(log N\*log log N)) words, and for d is O(N/log N) bytes (which again could be bits).
-This time-complexity is bettered only by the specialised algorithms for prime counting dating from Meissel's in 1870.
 
 ### wheel_sieve_fast_counter_two.cpp
 
@@ -126,12 +127,15 @@ First, the primes up to sqrt(N) are found (by a call to the Sift function).
 Second, an array is maintained that essentially records the number of elements in W up to N/p for each prime p up to sqrt(N).
 Also, the code has been refactored to better reveal the different stages of the main loop over the primes.
 
-When only counting is requested, the work performed is equivalent to the dynamic wheel sieve
-up to a limit of O(N/(log N)^2), since the additional work for the added arrays is negligible.
+When only counting is requested, the work performed is again dominated by compression,
+which is proportional to the number of deletions performed by the dynamic wheel sieve with a limit of N/log N,
+limited to primes up to N^(1/3).
 The space for the additional arrays is also (comparatively) insignificant.
-Accordingly, the time-complexity is O(N/((log N)^2\*log log N)) operations.
+Accordingly, the time-complexity is O(N/(log N\*log log N)) operations.
 The space required for array w is O(N/((log N)^2\*log log N)) words,
 and for d is O(N/((log N)^2) bytes (which again could be bits).
+
+This time-complexity is bettered only by the specialised algorithms for prime counting dating from Meissel's in 1870.
 
 ### forthcoming
 
