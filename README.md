@@ -127,7 +127,7 @@ Second, an array is maintained that essentially records the number of elements i
 Also, the code has been refactored to better reveal the different stages of the main loop over the primes.
 
 When only counting is requested, the work performed is equivalent to the dynamic wheel sieve
-up to a limit of O(N/(log N)^2), since the additional work for the added arrays in negligible.
+up to a limit of O(N/(log N)^2), since the additional work for the added arrays is negligible.
 The space for the additional arrays is also (comparatively) insignificant.
 Accordingly, the time-complexity is O(N/((log N)^2\*log log N)) operations.
 The space required for array w is O(N/((log N)^2\*log log N)) words,

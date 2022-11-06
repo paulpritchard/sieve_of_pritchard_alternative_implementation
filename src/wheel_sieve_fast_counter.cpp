@@ -93,8 +93,8 @@ void Compress(uint32_t w[], bool d[], uint32_t from, uint32_t &to, uint32_t w_en
     #endif
 }
 
-void Sift(uint32_t N) {
-    /* prints the primes up to N */
+void Sift(uint32_t N, uint32_t &nr) {
+    /* prints the nr primes up to N */
     uint32_t *w = new uint32_t[1];
     bool *d = new bool[2];
     /* representation invariant (for the main loop): */
@@ -156,11 +156,13 @@ void Sift(uint32_t N) {
     int stop_s=clock();
     p_time += (stop_s-start_s)/double(CLOCKS_PER_SEC);
     delete[] w; delete[] d;
-    printf("%d primes up to %d = 1 (for 2) + %d (appended) - %d (deleted).\n", (1+nr_appended-nr_deleted), N, nr_appended, nr_deleted);
+    nr = 1+nr_appended-nr_deleted;
+    printf("%d primes up to %d = 1 (for 2) + %d (appended) - %d (deleted).\n", nr, N, nr_appended, nr_deleted);
 }
 
-void Count(uint64_t N) {
-    /* counts the primes up to N */
+uint64_t Count(uint64_t N) {
+    /* returns the number of primes up to N */
+    if (N < 9) return((N+1)/2);
     uint32_t *w = new uint32_t[1];
     bool *d = new bool[3]; /* since length=2 */
     /* representation invariant (for the main loop): */
@@ -171,80 +173,88 @@ void Count(uint64_t N) {
     uint64_t p2, limit;
     uint32_t iNoverp = 0; /* max {i: w[i]<=N/p} */
     uint32_t iNoverp2 = 0; /* max {i: w[i]<=N/p^2} */
-   /* W,k,length = {1},1,2: */
+    /* W,k,length = {1},1,2: */
     uint32_t w_end = 0; w[0] = 1; d[1] = false; uint64_t length = 2;
     uint64_t nr_appended = 0, nr_deleted = 0; /* notional */
+    uint64_t nr_compressed = 0;
     /* Pr = {2}: */
     /* nrPrimes = 1; */
     p = 3; p_index = 1; p2 = p*p;
     uint32_t c_from = 1;
     /* invariant: p = p_(k+1) and W = W_k inter {1,...,N} and length = min(P_k,N) and Pr = the first k primes */
     /* (where p_i denotes the i'th prime, W_i denotes the i'th wheel, P_i denotes the product of the first i primes) */
-    while (p2 <= N) { /* p^2 <= N */
-        if (length < N) {
-            w_end_prev = w_end;
-            limit = p*length; if (limit > N) limit = N;
-            if (limit <= N/p) { /* ensure last full wheel is not too big */
-                Extend(w, w_end, length, limit, d);
-                nr_appended += w_end-w_end_prev;
-                Delete(w, p, 0, w_end_prev, d); /* starts from w[0] to delete p*w[0]=p*1=p */
-                nr_deleted += w_end_prev; /* don't count prime deleted */
-                Compress(w, d, c_from, w_end, w_end); /* c_from=1 since p=w[1] is deleted */
-            } else { /* extend to N notionally */
-                nr_appended += (N/length-1)*(w_end+1);
-                rem = N % length;
-                if (rem > 0) nr_appended += find(w, rem, 0, w_end+1)+1;
-                limit = N/p;
-                if (limit > length) {
-                    Extend(w, w_end, length, limit, d);
-                } else { /* occurs e.g. when N=25,150 */
-                    while (w[w_end] > N/p) w_end--; /* doubling then binary search could be used here */
-                }
-                nr_deleted += w_end;
-                length = N; /* notional */
-                iNoverp2 = find(w, N/p2, 0, w_end);
-                if (p2 <= N/p) {
-                    Delete(w, p, 1, iNoverp2, d);
-                    while (w[c_from] < p2) c_from++; /* doubling then binary search could be used here */
-                    Compress(w, d, c_from, w_end, w_end);
-                }
-                iNoverp = w_end; /* notional */
-                p_index++;
-            }
-        } else { /* length = N */
-            while (w[iNoverp] > N/p) iNoverp--; /* doubling then binary search could be used here */
-            nr_deleted += iNoverp-p_index+1;
-            if (p2 <= N/p) {
-                while (w[iNoverp2] > N/p2) iNoverp2--; /* doubling then binary search could be used here */
-                Delete(w, p, p_index, iNoverp2, d); /* don't delete p */
-            }
-            p_index++;
-            p_next = w[p_index];
-            if (p_next == 0) break; /* next p is after zeroed section so is too big */
-            if (p2 <= N/p_next) {
-                while (w[iNoverp] > N/p_next) iNoverp--; /* doubling then binary search could be used here */
-                while (w[c_from] < p2) c_from++; /* doubling then binary search could be used here */
-                Compress(w, d, c_from, iNoverp, w_end);
-            }
-        }
+    while (p*length <= N/p) { /* ensure last full wheel is not too big */
+        w_end_prev = w_end;
+        Extend(w, w_end, length, p*length, d);
+        nr_appended += w_end-w_end_prev;
+        Delete(w, p, 0, w_end_prev, d); /* starts from w[0] to delete p*w[0]=p*1=p */
+        nr_deleted += w_end_prev; /* don't count prime deleted */
+        nr_compressed += w_end-c_from+1;
+        Compress(w, d, c_from, w_end, w_end); /* c_from=1 since p=w[1] is deleted */
         /* p = next(W, 1): */
-        if (p_index > w_end) break; /* needed? */
         p = w[p_index];
         p2 = (uint64_t)p*(uint64_t)p;
         /* k++ */
     }
-    if (length < N) {
-        w_end_prev = w_end;
-        Extend (w, w_end, length, N, d);
-        nr_appended += w_end-w_end_prev;
+    /* extend to N notionally */
+    nr_appended += (N/length-1)*(w_end+1);
+    rem = N % length;
+    if (rem > 0) nr_appended += find(w, rem, 0, w_end+1)+1;
+    limit = N/p;
+    /* use w up to N/p */
+    if (limit > length) {
+        Extend(w, w_end, length, limit, d);
+    } else { /* occurs e.g. when N=25,150 */
+        while (w[w_end] > N/p) w_end--; /* doubling then binary search could be used here */
+    }
+    nr_deleted += w_end;
+    length = N; /* notional */
+    iNoverp2 = find(w, N/p2, 0, w_end);
+    if (p2 <= N/p) {
+        Delete(w, p, 1, iNoverp2, d);
+        while (w[c_from] < p2) c_from++; /* doubling then binary search could be used here */
+        nr_compressed += w_end-c_from+1;
+        Compress(w, d, c_from, w_end, w_end);
+    }
+    iNoverp = w_end; /* notional */
+    /* p = next(W, 1): */
+    if (p_index == w_end) return(1+nr_appended-nr_deleted);
+    p = w[++p_index];
+    p2 = (uint64_t)p*(uint64_t)p;
+    /* k++ */
+    while (p2 <= N/p) {
+        while (w[iNoverp] > N/p) iNoverp--; /* doubling then binary search could be used here */
+        nr_deleted += iNoverp-p_index+1;
+        while (w[iNoverp2] > N/p2) iNoverp2--; /* doubling then binary search could be used here */
+        Delete(w, p, p_index, iNoverp2, d); /* don't delete p */
+        while (w[c_from] < p2) c_from++; /* doubling then binary search could be used here */
+        nr_compressed += iNoverp-c_from+1;
+        Compress(w, d, c_from, iNoverp, w_end);
+        /* p = next(W, 1): */
+        p = w[++p_index];
+        p2 = (uint64_t)p*(uint64_t)p;
+        /* k++ */
+    }
+    while (p2 <= N) {
+        while (w[iNoverp] > N/p) iNoverp--; /* doubling then binary search could be used here */
+        nr_deleted += iNoverp-p_index+1;
+        /* p = next(W, 1): */
+        if (p_index > w_end) break; /* needed? */
+        p = w[++p_index];
+        if (p == 0) break; /* next p is after zeroed section so is too big */
+        p2 = (uint64_t)p*(uint64_t)p;
+        /* k++ */
     }
     delete[] w; delete[] d;
+    printf("%lu compressed\n", nr_compressed);
     printf("%lu primes up to %lu = 1 (for 2) + %lu (appended) - %lu (deleted).\n", (1+nr_appended-nr_deleted), N, nr_appended, nr_deleted);
+    return(1+nr_appended-nr_deleted);
 }
 
 int main (int argc, char *argw[]) {
-    bool error = false; bool printPrimes = false; uint64_t maxPrint = 1000000000; uint64_t maxCount = 100000000000; 
-    uint64_t N;
+    bool error = false; bool printPrimes = false; uint64_t maxPrint = 1000000000; uint64_t maxCount = 100000000000;
+    uint32_t np;
+    uint64_t N, nptoN;
     uint64_t max = maxCount;
     if (argc == 3) {
         if (strcmp(argw[2], "-p") == 0) {
@@ -265,7 +275,13 @@ int main (int argc, char *argw[]) {
         exit(1);
     }
     int start_s = clock();
-    if (printPrimes) Sift(N); else Count(N);
+    if (printPrimes) {
+        Sift(N, np);
+        nptoN = np;
+    } else {
+        nptoN = Count(N);
+    }
+    printf("%lu primes up to %lu\n", nptoN, N);
     int stop_s=clock();
     float duration = (stop_s-start_s)*1E3/double(CLOCKS_PER_SEC);
     printf("Total time %.2f ms\n", duration);
