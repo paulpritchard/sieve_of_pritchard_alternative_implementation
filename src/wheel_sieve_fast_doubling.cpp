@@ -1,5 +1,5 @@
 /* Sieve of Pritchard in C++, as described at https://en.wikipedia.org/wiki/Sieve_of_Pritchard */
-/* arguments: N [-p]
+/* arguments: N [-p] */
 /*    N: finds primes up to N */
 /*   -p: (optional) print the primes found */
 /* careful high-performance implementation using a simple array of integers and a bit array (using bytes for speed) */
