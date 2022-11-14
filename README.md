@@ -112,7 +112,7 @@ and for d is O(N) bits (although the C++ implementation uses bytes).
 
 When only counting is requested, the work performed is dominated by the cost of compression,
 which is proportional to the number of deletions performed by the dynamic wheel sieve for primes up to N^(1/3).
-So the time-complexity is still O(N/log log N)) operations, but with a very small constant factor.
+So the time-complexity is still O(N/log log N) operations, but with a very small constant factor.
 The space required for array w is O(N/(log N\*log log N)) words, and for d is O(N/log N) bytes (which again could be bits).
 
 ### wheel_sieve_fast_counter_two.cpp
@@ -121,7 +121,6 @@ This is a self-contained C++ program, which behaves like wheel_sieve_fast.cpp wh
 except that the code is modified to also return an array of the primes found.
 However, when only a count of the primes up to N is required, it runs very much faster than even wheel_sieve_fast_counter.cpp.
 It does so by essentially simulating the latter with a cut-down version using much smaller arrays.
-
 Additional information is maintained by this algorithm.
 First, the primes up to sqrt(N) are found (by a call to the Sift function).
 Second, an array is maintained that essentially records the number of elements in W up to N/p for each prime p up to sqrt(N).
