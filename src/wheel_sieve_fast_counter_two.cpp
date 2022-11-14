@@ -31,7 +31,7 @@ void wCheck (uint32_t w[], uint32_t from, uint32_t to, bool d[]) { // for loggin
 }
 
 void countsCheck (uint32_t nprime, uint32_t prime[], uint32_t nrWheelPrimes, uint64_t nrNoverpi[]) {
-    for (uint32_t i=nrWheelPrimes; i < nprime; i++) printf(" nr[%d] for %d = %lu", i, prime[i], nrNoverpi[i]);
+    for (uint32_t i=nrWheelPrimes; i < nprime; i++) printf(" nr[%d] for %d = %llu", i, prime[i], nrNoverpi[i]);
     printf("\n");
 }
 
@@ -313,7 +313,7 @@ int main (int argc, char *argw[]) {
         error = true;
     }
     if (error) {
-        printf("call with: %s N where 2 <= N <= %lu to count, or %s N -p where 2 <= N <= %lu to print\n", argw[0], maxCount, argw[0], maxPrint);
+        printf("call with: %s N where 2 <= N <= %llu to count, or %s N -p where 2 <= N <= %llu to print\n", argw[0], maxCount, argw[0], maxPrint);
         exit(1);
     }
     int start_s = clock();
@@ -324,7 +324,7 @@ int main (int argc, char *argw[]) {
     } else {
         nptoN = Count(N);
     }
-    printf("%lu primes up to %lu\n", nptoN, N);
+    printf("%llu primes up to %llu\n", nptoN, N);
     int stop_s=clock();
     float duration = (stop_s-start_s)*1E3/double(CLOCKS_PER_SEC);
     printf("Total time %.2f ms\n", duration);

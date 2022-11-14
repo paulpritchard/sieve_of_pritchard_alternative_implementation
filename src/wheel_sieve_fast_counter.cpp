@@ -247,7 +247,7 @@ uint64_t Count(uint64_t N) {
     }
     delete[] w; delete[] d;
     printf("%lu compressed\n", nr_compressed);
-    printf("%lu primes up to %lu = 1 (for 2) + %lu (appended) - %lu (deleted).\n", (1+nr_appended-nr_deleted), N, nr_appended, nr_deleted);
+    printf("%llu primes up to %llu = 1 (for 2) + %llu (appended) - %llu (deleted).\n", (1+nr_appended-nr_deleted), N, nr_appended, nr_deleted);
     return(1+nr_appended-nr_deleted);
 }
 
@@ -271,7 +271,7 @@ int main (int argc, char *argw[]) {
         error = true;
     }
     if (error) {
-        printf("call with: %s N where 2 <= N <= %lu to count, or %s N -p where 2 <= N <= %lu to print\n", argw[0], maxCount, argw[0], maxPrint);
+        printf("call with: %s N where 2 <= N <= %llu to count, or %s N -p where 2 <= N <= %llu to print\n", argw[0], maxCount, argw[0], maxPrint);
         exit(1);
     }
     int start_s = clock();
