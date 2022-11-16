@@ -301,7 +301,7 @@ int main (int argc, char *argw[]) {
     }
     //error = false; N = 10;
     if (error) {
-        printf("call with: %s N where 2 <= N <= %lu to count, or %s N -p where 2 <= N <= %lu to print\n", argw[0], maxCount, argw[0], maxPrint);
+        printf("call with: %s N where 2 <= N <= %llu to count, or %s N -p where 2 <= N <= %llu to print\n", argw[0], maxCount, argw[0], maxPrint);
         exit(1);
     }
     int start_s = clock();
