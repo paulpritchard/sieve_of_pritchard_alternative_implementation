@@ -59,7 +59,7 @@ uint32_t deleted_up_to(char *d, uint32_t n, uint32_t* count, uint32_t subinterva
     return(sum);
 }
 
-void createCounters(uint32_t* &count, uint32_t &subinterval, uint32_t w[], uint32_t limit) {
+void createCounters(uint32_t* &count, uint32_t &subinterval, uint32_t limit) {
     // creates array used to maintain counts of deletions in intervals of width subinterval
     uint32_t fastBitCountFactor = 10;
     uint32_t width = sqrt(limit)*fastBitCountFactor;
@@ -239,7 +239,7 @@ uint64_t Count(uint64_t N) {
     rem = N % length;
     nr_appended += nrOnWheelTo[rem];
     limit = N/p;
-     use w up to N/p
+    // use w up to N/p
     if (limit > length) {
         Extend(w, w_end, length, limit, d);
     } else { // occurs e.g. when N=25,150
@@ -248,7 +248,7 @@ uint64_t Count(uint64_t N) {
         while (w[w_end] > N/p) w_end--; // doubling then binary search could be used here
     }
     uint32_t *count; uint32_t subinterval;
-    createCounters(count, subinterval, w, limit);
+    createCounters(count, subinterval, limit);
     length = N; // notional
     iNoverp2 = find(w, N/p2, 0, w_end+1);
     p2 = (uint64_t)p*(uint64_t)p;
@@ -272,6 +272,7 @@ uint64_t Count(uint64_t N) {
         while (w[iNoverp] > N/p) iNoverp--; // doubling then binary search could be used here
         nr_deleted += iNoverp-p_index+1;
         // p = next(W, 1):
+        if (p_index >= w_end) break;
         p = w[++p_index];
         p2 = (uint64_t)p*(uint64_t)p;
         // k++
@@ -299,9 +300,8 @@ int main (int argc, char *argw[]) {
     } else {
         error = true;
     }
-    //error = false; N = 10;
     if (error) {
-        printf("call with: %s N where 2 <= N <= %llu to count, or %s N -p where 2 <= N <= %llu to print\n", argw[0], maxCount, argw[0], maxPrint);
+        printf("call with: %s N where 2 <= N <= %lu to count, or %s N -p where 2 <= N <= %lu to print\n", argw[0], maxCount, argw[0], maxPrint);
         exit(1);
     }
     int start_s = clock();
