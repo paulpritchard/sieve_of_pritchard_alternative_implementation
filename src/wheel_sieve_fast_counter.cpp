@@ -103,9 +103,8 @@ void Extend (uint32_t* &w, uint32_t &w_end, uint64_t &length, uint64_t n, char* 
 
 void Delete (uint32_t w[], uint32_t p, uint32_t from, uint32_t to, char d[]) {
     // Deletes multiples p*w[i] from W for from <= i <= to
-    uint32_t c;
     int start_s = clock();
-    for (uint32_t i=from; i <= to; i++) { c = p*w[i]; delete(c); }
+    for (uint32_t i=from; i <= to; i++) delete(p*w[i]);
     int stop_s=clock();
     d_time += (stop_s-start_s)/double(CLOCKS_PER_SEC);
     #if LOGGING
@@ -191,7 +190,7 @@ void Sift(uint32_t N, uint32_t &nr) {
     }
     int stop_s=clock();
     p_time += (stop_s-start_s)/double(CLOCKS_PER_SEC);
-    delete[] w; delete[] d;
+    delete[] w; free(d);
     nr = 1+nr_appended-nr_deleted;
     printf("%d composites deleted\n", nr_deleted);
 }
@@ -243,7 +242,7 @@ uint64_t Count(uint64_t N) {
     if (limit > length) {
         Extend(w, w_end, length, limit, d);
     } else { // occurs e.g. when N=25,150
-        delete[] d;
+        free(d);
         d = (char*) calloc(limit/8 + 1, 1); // initialized to zero
         while (w[w_end] > N/p) w_end--; // doubling then binary search could be used here
     }
@@ -277,7 +276,7 @@ uint64_t Count(uint64_t N) {
         p2 = (uint64_t)p*(uint64_t)p;
         // k++
     }
-    delete[] w; delete[] d;
+    delete[] w; free(d);
     return(1+nr_appended-nr_deleted); // 1 is for prime 2
 }
 
