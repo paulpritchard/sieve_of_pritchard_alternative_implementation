@@ -1,8 +1,8 @@
-# A fast implementation of the dynamic wheel sieve of Pritchard
+# An alternative implementation of the dynamic wheel sieve of Pritchard
 
 This repository concerns the dynamic wheel sieve of Pritchard as described on its [Wikipedia page](https://en.wikipedia.org/wiki/Sieve_of_Pritchard).
 It is an algorithm for finding the primes up to a given limit N that takes sublinear time O(N/log log N).
-The repository contains several variations of a new fast implementation of the algorithm.
+The repository contains several variations of an alternative implementation of the algorithm.
 
 The original implementation is described in the paper
 [Paul Pritchard, "A Sublinear Additive Sieve for Finding Prime Numbers", *Communications of the ACM*, vol. 24, no. 1, pp. 18–23](https://dl.acm.org/doi/10.1145/358527.358540).
@@ -12,20 +12,20 @@ Since the dynamic wheel sieve was presented as a contribution to computational c
 the original implementation was designed to demonstrate the sublinear running time as simply and clearly as possible.
 
 We provide here an alternative and much more efficient implementation.
-It shows that the performance of the dynamic wheel sieve on modern computers is more than competitive with
-the classic form of the sieve of Eratosthenes or any other unoptimized sieve.
+it is both faster (by a constant factor) and requires less space than the original implementation.
+
+Note that the pure bitmap implementation in the repository
+[Sieve_of_Pritchard_Bitmap_Implementation](https://github.com/paulpritchard/Sieve_of_Pritchard_Bitmap_Implementation) is even faster again.
+If it's pure speed you are after, proceed directly there. Do not pass GO.
+However, the implementations is this repository are of independent interest because they naturally culminate in
+algorithms for counting the primes much faster than they can be generated.
 
 ## implementations
 
 The code for various implementations resides in the src directory.
 These implementations are discussed below in order of increasing sophistication and better performance.
-Note that each of these is an _implementation_ of the original abstract algorithm,
-so the same abstract operations are performed in the same order.
-There are _no optimizations_ such as are routinely applied to other sieves to increase their performance.
-So, no special code to avoid even numbers (or other grafted-on uses of wheels!), no precomputation, no segmentation, no multiprocessing.
 
-
-### wheel_sieve_fast_simple.cpp
+### wheel_sieve_simple.cpp
 
 This is a self-contained C++ program.
 It gives a simple but fast implementation of the dynamic wheel sieve,
@@ -59,28 +59,33 @@ Each low-level operation in the resulting algorithm can be associated with an ab
 So the resulting program still runs in O(N/log log N) time, and the implicit constant factor is quite small.
 It should be more than competitive with a good implementation of the classic sieve of Eratosthenes (i.e., without wheels or segmentation).
 
-### wheel_sieve_fast.cpp
+### wheel_sieve.cpp
 
 This is a self-contained C++ program, which dynamically allocates the growing array w[].
-It is obtained from wheel_sieve_fast_simple.cpp by minimizing the compressions performed.
+It is obtained from wheel_sieve_simple.cpp by minimizing the compressions performed.
 
 First notice that once the length of W reaches N, it is not necessary to delete the current prime:
 it is sufficient to begin deletions with the square of the current prime.
-Now, after the Delete step, the values in w will have no deletions (or zeros) up to p^2.
+Now, after the Delete step, the values in w will have no deletions up to p^2.
 So if p'*p^2 exceeds N (where p' is the next prime), no compression at all is needed.
-
 Furthermore, compression that is needed can start with p^2.
 
+Also, the code is engineered for high-performance.
+Function Delete uses SIMD (short vector) processing.
+Function Compress is optimized to avoid slow accesses of the bit array d.
+It instead searches for successive deleted future factors, and uses memcpy to move the sections between them.
+In order to permit fast doubling (then binary) searches,
+gaps after compression are filled with an even number (rather than 0) that keeps w ordered.
+
 The resulting code is still essentially a faithful implementation of the abstract algorithm.
-A detailed high-level code animation for N=2000 is shown in this video:
+A detailed high-level code animation (using 0 for padding) for N=2000 is shown in this video:
 
 [<img src="https://user-images.githubusercontent.com/1209656/200105831-ca678d1f-eaab-4895-8dea-58f04001211f.jpg" width="50%">](https://www.youtube.com/watch?v=-q-CFXLRSY0 "Code animation for N=2000")
-
 
 ### wheel_sieve_fast_doubling.cpp
 
 This is a self-contained C++ program.
-It is obtained from wheel_sieve_fast.cpp by using doubling then binary searches to compute key
+It is obtained from wheel_sieve.cpp by using doubling then binary searches to compute key
 indexes used for compression and deletion.
 As shown by the "Other" timing category, this has almost no effect on performance,
 so the increased code complexity is not justified.
@@ -158,18 +163,10 @@ Accordingly, the time-complexity is O(N/(log N\*log log N)) operations.
 The space required for array w is O(N/((log N)^2\*log log N)) words,
 and for d is O(N/((log N)^2) bytes (which again could be bits).
 
-### forthcoming
-
-It is possible to continue in this vein, for at least one more step.
-
 ## optimizations
 
 There are many opportunities for optimizing the code to speed it up (hopefully!) or reduce the memory required.
 Here are some:
-
-- When scanning w[] to print the primes, sections of zeros have to be skipped.
-It is possible to record the length len of the section at the start, for example by encoding it as len+N.
-Then, when the primes are printed or otherwise gathered, the section can be skipped in one step.
 
 - Array w[] can store the gaps betwen successive elements rather than the elements themselves.
 It can then be very efficiently extended using memcpy.
